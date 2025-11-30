@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --secondary-color: #1e40af;
+        --accent-color: #f59e0b;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        padding: 50px 0;
+        margin-bottom: 40px;
+        margin-top: 60px;
+    }
+    
+    .profile-header h1 {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .profile-header p {
+        opacity: 0.95;
+        margin: 10px 0 0 0;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: 12px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .form-section h4 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-section h4 i {
+        font-size: 1.3rem;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .form-label i {
+        color: var(--primary-color);
+    }
+    
+    .form-control,
+    .form-select {
+        border: 2px solid #e5e7eb !important;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+        outline: none;
+    }
+    
+    .form-control:disabled {
+        background-color: #f3f4f6;
+        cursor: not-allowed;
+    }
+    
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .upload-area {
+        border: 2px dashed var(--primary-color);
+        border-radius: 10px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background-color: #f0f9ff;
+    }
+    
+    .upload-area:hover {
+        background-color: #e0e7ff;
+        border-color: var(--secondary-color);
+    }
+    
+    .upload-area i {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .upload-area label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        border: none;
+        padding: 14px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        color: white;
+    }
+    
+    .info-box {
+        background-color: #f0f9ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .info-box i {
+        color: var(--primary-color);
+        margin-right: 10px;
+    }
+    
+    .field-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .text-muted {
+        color: var(--text-light);
+    }
+</style>
+
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="container">
+        <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+        <p>Manage your account information and preferences</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="profile-card">
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h4><i class="fas fa-user"></i> Basic Information</h4>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Your username and email cannot be changed. Contact support if you need to update them.</span>
+                </div>
+                <div class="field-row">
+                    <div class="form-group">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email Address
+                        </label>
+                        <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-section">
+                <h4><i class="fas fa-address-card"></i> Contact Information</h4>
+                <div class="field-row">
+                    <div class="form-group">
+                        <label for="phone" class="form-label">
+                            <i class="fas fa-phone"></i> Phone Number
+                        </label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ profile.phone|default:'' }}" placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Address
+                        </label>
+                        <input type="text" class="form-control" id="address" name="address" value="{{ profile.address|default:'' }}" placeholder="123 Main St, City, State">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Information -->
+            <div class="form-section">
+                <h4><i class="fas fa-briefcase"></i> Professional Information</h4>
+                <div class="form-group">
+                    <label for="skills" class="form-label">
+                        <i class="fas fa-star"></i> Skills
+                    </label>
+                    <textarea class="form-control" id="skills" name="skills" placeholder="Enter your skills separated by commas&#10;e.g., Python, JavaScript, React, Node.js">{{ profile.skills|default:'' }}</textarea>
+                    <small class="text-muted">Separate multiple skills with commas</small>
+                </div>
+                <div class="form-group">
+                    <label for="experience" class="form-label">
+                        <i class="fas fa-graduation-cap"></i> Experience
+                    </label>
+                    <textarea class="form-control" id="experience" name="experience" placeholder="Describe your work experience, education, and achievements&#10;Be specific about your roles and responsibilities">{{ profile.experience|default:'' }}</textarea>
+                    <small class="text-muted">Share your professional background and accomplishments</small>
+                </div>
+            </div>
+
+            <!-- Document Upload -->
+            <div class="form-section">
+                <h4><i class="fas fa-file-pdf"></i> Resume Upload</h4>
+                <div class="form-group">
+                    <label for="resume" class="form-label">
+                        Upload Resume (PDF/DOCX)
+                    </label>
+                    <div class="upload-area" onclick="document.getElementById('resume').click();">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <label for="resume">
+                            Click to upload or drag and drop
+                            <br>
+                            <small class="text-muted">PDF, DOCX up to 5MB</small>
+                        </label>
+                        <input type="file" class="form-control" id="resume" name="resume" style="display: none;" accept=".pdf,.docx">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div style="margin-top: 30px;">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('resume');
+        
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#e0e7ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f0f9ff';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f0f9ff';
+                fileInput.files = e.dataTransfer.files;
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                const fileName = e.target.files[0]?.name || 'No file chosen';
+                const label = uploadArea.querySelector('label');
+                if (e.target.files[0]) {
+                    label.innerHTML = `<i class="fas fa-check-circle" style="color: #10b981;"></i> ${fileName}`;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

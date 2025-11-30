@@ -1,0 +1,5 @@
+The migrations directory for the `jobs` app is typically where Django stores migration files that are generated when you create or modify models. Since this is a new project and the migrations directory is empty, the contents of the `/job1/job1/jobs/migrations` directory will be intentionally left blank.
+
+Here is the content for the file:
+
+# This directory is intentionally left blank.

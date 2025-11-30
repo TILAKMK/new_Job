@@ -1,0 +1,6 @@
+The migrations directory for the `companies` app is typically where Django stores migration files that are generated when you create or modify models. Since this is a new project and no migrations have been created yet, this directory will be empty.
+
+Here is the content for the file:
+
+# /job1/job1/companies/migrations
+# This directory is intentionally left blank.

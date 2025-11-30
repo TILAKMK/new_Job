@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resume Builder{% endblock %}
+
+{% block content %}
+<style>
+  :root{--primary-color:#2563eb;--secondary-color:#1e40af;--text-light:#6b7280}
+  .page-header{background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:#fff;padding:36px 0;margin-bottom:24px}
+  .resume-card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
+  .field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .upload-area{border:2px dashed var(--primary-color);border-radius:8px;padding:20px;text-align:center;background:#f0f9ff;cursor:pointer}
+  .submit-btn{background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:#fff;padding:10px 20px;border-radius:8px}
+  .form-section{margin-bottom:20px}
+</style>
+
+<div class="page-header">
+  <div class="container">
+    <h1><i class="fas fa-file-alt"></i> Resume Builder</h1>
+    <p class="mb-0">Create a professional resume in minutes</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="resume-card">
+    <div class="mb-3 alert alert-info">
+      <i class="fas fa-lightbulb me-2"></i> Complete sections to create a comprehensive resume.
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <div class="form-section">
+        <h5 class="text-primary"><i class="fas fa-user"></i> Personal Information</h5>
+        <div class="field-row">
+          <div>
+            <label class="form-label" for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" class="form-control" value="{{ form.full_name.value|default:'' }}" placeholder="John Doe" required>
+          </div>
+          <div>
+            <label class="form-label" for="location">Location</label>
+            <input type="text" id="location" name="location" class="form-control" value="{{ form.location.value|default:'' }}" placeholder="City, State">
+          </div>
+        </div>
+        <div class="field-row mt-3">
+          <div>
+            <label class="form-label" for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" class="form-control" value="{{ form.phone.value|default:'' }}" placeholder="(+1) 555-0123">
+          </div>
+          <div>
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}" placeholder="you@example.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h5 class="text-primary"><i class="fas fa-briefcase"></i> Professional Summary</h5>
+        <div>
+          <label class="form-label" for="summary">Summary</label>
+          <textarea id="summary" name="summary" class="form-control" placeholder="Brief professional summary">{{ form.summary.value|default:'' }}</textarea>
+        </div>
+        <div class="mt-3">
+          <label class="form-label" for="skills">Skills</label>
+          <textarea id="skills" name="skills" class="form-control" placeholder="e.g., Python, Django, Leadership">{{ form.skills.value|default:'' }}</textarea>
+          <div class="form-text text-muted">Separate skills with commas.</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h5 class="text-primary"><i class="fas fa-history"></i> Work Experience</h5>
+        <div>
+          <label class="form-label" for="experience">Experience</label>
+          <textarea id="experience" name="experience" class="form-control" placeholder="Describe your work experience">{{ form.experience.value|default:'' }}</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h5 class="text-primary"><i class="fas fa-graduation-cap"></i> Education</h5>
+        <div>
+          <label class="form-label" for="education">Education</label>
+          <textarea id="education" name="education" class="form-control" placeholder="Describe your education">{{ form.education.value|default:'' }}</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h5 class="text-primary"><i class="fas fa-cloud-upload-alt"></i> Upload Existing Resume (Optional)</h5>
+        <div class="upload-area" onclick="document.getElementById('resume').click();">
+          <i class="fas fa-file-pdf fa-2x"></i>
+          <div class="mt-2">Click to upload or drag and drop</div>
+          <small class="text-muted">PDF, DOCX up to 5MB</small>
+          <input type="file" id="resume" name="resume" accept=".pdf,.docx" style="display:none">
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-3">
+        <button type="submit" class="submit-btn"><i class="fas fa-magic"></i> Generate Resume</button>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const uploadArea = document.querySelector('.upload-area');
+  const fileInput = document.getElementById('resume');
+  if(!uploadArea || !fileInput) return;
+
+  uploadArea.addEventListener('dragover', e=>{ e.preventDefault(); uploadArea.style.background='#e0e7ff' });
+  uploadArea.addEventListener('dragleave', e=>{ e.preventDefault(); uploadArea.style.background='#f0f9ff' });
+  uploadArea.addEventListener('drop', e=>{ e.preventDefault(); fileInput.files = e.dataTransfer.files; updateLabel() });
+  fileInput.addEventListener('change', updateLabel);
+
+  function updateLabel(){ const name=fileInput.files[0]?.name||'No file chosen'; uploadArea.querySelector('div') && (uploadArea.querySelector('div').textContent = name) }
+});
+</script>
+
+{% endblock %}

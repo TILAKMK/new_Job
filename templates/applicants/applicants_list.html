@@ -1,0 +1,362 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicants List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 50px 0;
+            margin-bottom: 40px;
+        }
+        
+        .page-header h1 {
+            font-weight: 700;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-header p {
+            opacity: 0.95;
+            margin: 10px 0 0 0;
+        }
+        
+        .applicants-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .table-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .table-header-info h3 {
+            margin: 0;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+        
+        .filter-badge {
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        thead th {
+            background-color: #f9fafb;
+            color: var(--text-dark);
+            font-weight: 700;
+            border-color: #e5e7eb;
+            padding: 15px;
+        }
+        
+        tbody td {
+            padding: 15px;
+            border-color: #e5e7eb;
+            vertical-align: middle;
+        }
+        
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .applicant-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .applicant-name i {
+            color: var(--primary-color);
+        }
+        
+        .job-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-accepted {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-view {
+            background-color: #dbeafe;
+            color: var(--primary-color);
+        }
+        
+        .btn-view:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-accept {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .btn-accept:hover {
+            background-color: #065f46;
+            color: white;
+        }
+        
+        .btn-reject {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+        
+        .btn-reject:hover {
+            background-color: #7f1d1d;
+            color: white;
+        }
+        
+        .no-applicants {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .no-applicants i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 2px solid var(--primary-color);
+            background-color: white;
+            color: var(--primary-color);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    {% include 'base.html' %}
+    
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-users"></i> Applicants Management</h1>
+            <p>Review and manage job applications</p>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="applicants-card">
+            <!-- Table Header Info -->
+            <div class="table-header-info">
+                <h3><i class="fas fa-list"></i> Applications</h3>
+                <span class="filter-badge">
+                    <i class="fas fa-list-ul"></i> 
+                    {% if applicants|length %}
+                        {{ applicants|length }} applicant{{ applicants|length|pluralize }}
+                    {% else %}
+                        No applications
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Applicants Table -->
+            {% if applicants %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> Applicant</th>
+                                <th><i class="fas fa-briefcase"></i> Position</th>
+                                <th><i class="fas fa-flag"></i> Status</th>
+                                <th><i class="fas fa-tasks"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for applicant in applicants %}
+                                <tr>
+                                    <td>
+                                        <div class="applicant-name">
+                                            <i class="fas fa-user-circle"></i>
+                                            {{ applicant.job_seeker.get_full_name|default:applicant.job_seeker.username }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="job-title">{{ applicant.job.title }}</div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt"></i> {{ applicant.job.location }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if applicant.status == 'pending' %}
+                                            <span class="status-badge status-pending">
+                                                <i class="fas fa-hourglass-half"></i> Pending
+                                            </span>
+                                        {% elif applicant.status == 'accepted' %}
+                                            <span class="status-badge status-accepted">
+                                                <i class="fas fa-check-circle"></i> Accepted
+                                            </span>
+                                        {% elif applicant.status == 'rejected' %}
+                                            <span class="status-badge status-rejected">
+                                                <i class="fas fa-times-circle"></i> Rejected
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge">{{ applicant.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="#" class="action-btn btn-view" title="View Application">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="#" class="action-btn btn-accept" title="Accept Application">
+                                                <i class="fas fa-check"></i> Accept
+                                            </a>
+                                            <a href="#" class="action-btn btn-reject" title="Reject Application">
+                                                <i class="fas fa-times"></i> Reject
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if applicants.paginator %}
+                    <div class="pagination-container">
+                        {% if applicants.has_previous %}
+                            <a href="?page=1" class="pagination-btn" title="First Page">
+                                <i class="fas fa-step-backward"></i>
+                            </a>
+                            <a href="?page={{ applicants.previous_page_number }}" class="pagination-btn" title="Previous Page">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        {% endif %}
+                        
+                        <span style="color: var(--text-light); font-weight: 600;">
+                            Page <strong>{{ applicants.number }}</strong> of <strong>{{ applicants.paginator.num_pages }}</strong>
+                        </span>
+                        
+                        {% if applicants.has_next %}
+                            <a href="?page={{ applicants.next_page_number }}" class="pagination-btn" title="Next Page">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="?page={{ applicants.paginator.num_pages }}" class="pagination-btn" title="Last Page">
+                                <i class="fas fa-step-forward"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- No Applicants Message -->
+                <div class="no-applicants">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No Applications Yet</h3>
+                    <p>You don't have any job applications to review at this moment.</p>
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-briefcase"></i> Post a Job
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

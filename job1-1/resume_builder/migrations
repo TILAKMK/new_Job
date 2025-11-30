@@ -1,0 +1,6 @@
+The migrations directory for the `resume_builder` app is typically where Django stores migration files that track changes to the models. Since this is a new app and no migrations have been created yet, the directory will be empty. 
+
+Here is the content for the file:
+
+/job1/job1/resume_builder/migrations
+# This directory is intentionally left blank.

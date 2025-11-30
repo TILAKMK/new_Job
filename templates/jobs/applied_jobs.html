@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+<style>
+  .page-header-small {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: white;
+    padding: 30px 0;
+    margin-top: 60px;
+    margin-bottom: 30px;
+  }
+  .application-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    margin-bottom: 18px;
+  }
+  .status-badge {
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .status-applied { background:#fef3c7; color:#92400e; }
+  .status-shortlisted { background:#d1fae5; color:#065f46; }
+  .status-accepted { background:#d1fae5; color:#065f46; }
+  .status-rejected { background:#fee2e2; color:#7f1d1d; }
+</style>
+
+<div class="page-header-small">
+  <div class="container">
+    <h2><i class="fas fa-clipboard-list"></i> My Applications</h2>
+    <p class="mb-0">Track the jobs you've applied to and their status.</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+  {% if page_obj and page_obj.object_list %}
+    {% for application in page_obj.object_list %}
+      <div class="application-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h5 class="mb-1"><a href="{% url 'jobs:job_detail' application.job.id %}">{{ application.job.title }}</a> <small class="text-muted">at {{ application.job.company.company_name }}</small></h5>
+            <p class="mb-1 text-muted">Applied on {{ application.applied_at|date:"M d, Y H:i" }}</p>
+            {% if application.cover_letter %}
+              <p class="mb-1"><strong>Cover Letter:</strong> {{ application.cover_letter|truncatechars:200 }}</p>
+            {% endif %}
+          </div>
+          <div class="text-end">
+            <span class="status-badge {% if application.status == 'applied' %}status-applied{% elif application.status == 'shortlisted' %}status-shortlisted{% elif application.status == 'accepted' %}status-accepted{% else %}status-rejected{% endif %}">{{ application.get_status_display }}</span>
+            <div style="margin-top:10px">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'jobs:job_detail' application.job.id %}"><i class="fas fa-eye"></i> View Job</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Prev</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if num == page_obj.number %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+  {% else %}
+    <div class="card p-4 text-center">
+      <h5 class="mb-2"><i class="fas fa-info-circle"></i> No applications yet</h5>
+      <p class="mb-0">You haven't applied to any jobs yet. Browse jobs and apply to positions that match your skills.</p>
+      <div class="mt-3"><a href="{% url 'jobs:job_list' %}" class="btn btn-primary">Browse Jobs</a></div>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

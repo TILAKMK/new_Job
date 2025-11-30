@@ -1,0 +1,7 @@
+Django==4.2
+djangorestframework==3.14.0
+weasyprint==57.1
+Pillow==10.0.0
+django-crispy-forms==1.14.0
+crispy-bootstrap5==1.0.0
+```

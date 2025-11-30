@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Apply for {{ job.title }}{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --secondary-color: #1e40af;
+        --accent-color: #f59e0b;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+    }
+    
+    .apply-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        padding: 50px 0;
+        margin-bottom: 40px;
+        margin-top: 60px;
+    }
+    
+    .apply-header h1 {
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .job-summary {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+    
+    .job-summary-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .job-summary-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .job-summary-item i {
+        font-size: 1.2rem;
+    }
+    
+    .apply-container {
+        max-width: 700px;
+        margin-bottom: 50px;
+    }
+    
+    .apply-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+    }
+    
+    .form-section h3 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.2rem;
+    }
+    
+    .form-section h3 i {
+        font-size: 1.4rem;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .form-label i {
+        color: var(--primary-color);
+    }
+    
+    .form-control {
+        border: 2px solid #e5e7eb !important;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        width: 100%;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+        outline: none;
+    }
+    
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+    
+    .upload-area {
+        border: 2px dashed var(--primary-color);
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background-color: #f0f9ff;
+    }
+    
+    .upload-area:hover {
+        background-color: #e0e7ff;
+        border-color: var(--secondary-color);
+    }
+    
+    .upload-area i {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .upload-area label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .info-box {
+        background-color: #dbeafe;
+        border-left: 4px solid var(--primary-color);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 12px;
+    }
+    
+    .info-box i {
+        color: var(--primary-color);
+        margin-top: 2px;
+    }
+    
+    .info-box p {
+        margin: 0;
+        color: var(--text-light);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        border: none;
+        padding: 14px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        color: white;
+    }
+    
+    .cancel-btn {
+        background-color: #f3f4f6;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        padding: 14px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .cancel-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .text-muted {
+        color: var(--text-light);
+    }
+</style>
+
+<!-- Application Header -->
+<div class="apply-header">
+    <div class="container">
+        <h1><i class="fas fa-paper-plane"></i> Apply for Position</h1>
+        <div class="job-summary">
+            <div class="job-summary-item">
+                <i class="fas fa-briefcase"></i>
+                <strong>{{ job.title }}</strong> at <strong>{{ job.company.company_name }}</strong>
+            </div>
+            <div class="job-summary-item">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ job.location }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container apply-container">
+    <div class="apply-card">
+        <!-- Info Box -->
+        <div class="info-box">
+            <i class="fas fa-lightbulb"></i>
+            <p>Complete all fields below and submit your application. Our team will review it and get back to you shortly.</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show">
+                        <i class="fas fa-info-circle"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Cover Letter Section -->
+            <div class="form-section">
+                <h3><i class="fas fa-pen-fancy"></i> Cover Letter</h3>
+                <div class="form-group">
+                    <label for="cover_letter" class="form-label">
+                        <i class="fas fa-file-alt"></i> Your Message
+                    </label>
+                    <textarea class="form-control" id="cover_letter" name="cover_letter" placeholder="Tell us why you're interested in this position and what makes you a great fit for the role..." required></textarea>
+                    <small class="text-muted">Tip: Write a compelling cover letter that highlights your relevant skills and experience</small>
+                </div>
+            </div>
+
+            <!-- Resume Section -->
+            <div class="form-section">
+                <h3><i class="fas fa-file-pdf"></i> Resume/CV</h3>
+                <div class="form-group">
+                    <label for="resume" class="form-label">
+                        Upload Your Resume
+                    </label>
+                    <div class="upload-area" onclick="document.getElementById('resume').click();">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <label for="resume">
+                            Click to upload or drag and drop
+                            <br>
+                            <small class="text-muted">PDF, DOCX up to 5MB</small>
+                        </label>
+                        <input type="file" class="form-control" id="resume" name="resume" style="display: none;" accept=".pdf,.docx" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Submit Application
+                </button>
+                <a href="{% url 'jobs:job_detail' job.id %}" class="cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('resume');
+        
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#e0e7ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f0f9ff';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f0f9ff';
+                fileInput.files = e.dataTransfer.files;
+                updateFileLabel();
+            });
+            
+            fileInput.addEventListener('change', updateFileLabel);
+        }
+        
+        function updateFileLabel() {
+            const fileName = fileInput.files[0]?.name || 'No file chosen';
+            const label = uploadArea.querySelector('label');
+            if (fileInput.files[0]) {
+                label.innerHTML = `<i class="fas fa-check-circle" style="color: #10b981; font-size: 2.5rem;"></i><br>${fileName}`;
+            }
+        }
+    });
+</script>
+{% endblock %}

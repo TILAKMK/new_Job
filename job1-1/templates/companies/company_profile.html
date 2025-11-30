@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company.company_name }} - Company Profile</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    {% include 'base.html' %}
+    
+    <div class="container mt-5">
+        <h1>{{ company.company_name }}</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ company.description }}</p>
+                <h5 class="card-title">Location</h5>
+                <p class="card-text">{{ company.location }}</p>
+                {% if company.logo %}
+                    <h5 class="card-title">Logo</h5>
+                    <img src="{{ company.logo.url }}" alt="{{ company.company_name }} Logo" class="img-fluid">
+                {% endif %}
+            </div>
+        </div>
+
+        <h2 class="mt-5">Job Postings</h2>
+        {% if jobs %}
+            <div class="list-group">
+                {% for job in jobs %}
+                    <a href="{% url 'job_detail' job.id %}" class="list-group-item list-group-item-action">
+                        <h5 class="mb-1">{{ job.title }}</h5>
+                        <p class="mb-1">{{ job.description|truncatewords:20 }}</p>
+                        <small>Location: {{ job.location }} | Salary: {{ job.salary }}</small>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No job postings available.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
