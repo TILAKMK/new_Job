@@ -8,31 +8,24 @@ from .models import Job, Applicant
 from .forms import JobForm
 
 
-# ------------------------------------------------------------
-# PUBLIC – JOB LIST
-# ------------------------------------------------------------
+# PUBLIC — JOB LIST
 class JobListView(View):
     def get(self, request):
         jobs = Job.objects.filter(status='approved').order_by('-id')
         paginator = Paginator(jobs, 10)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-
+        page = request.GET.get("page")
+        page_obj = paginator.get_page(page)
         return render(request, 'jobs/job_list.html', {'page_obj': page_obj})
 
 
-# ------------------------------------------------------------
-# PUBLIC – JOB DETAIL
-# ------------------------------------------------------------
+# PUBLIC — JOB DETAIL
 class JobDetailView(View):
     def get(self, request, job_id):
         job = get_object_or_404(Job, id=job_id)
         return render(request, 'jobs/job_detail.html', {'job': job})
 
 
-# ------------------------------------------------------------
-# COMPANY – CREATE JOB
-# ------------------------------------------------------------
+# COMPANY — CREATE JOB
 @method_decorator(login_required, name='dispatch')
 class JobCreateView(View):
     def get(self, request):
@@ -46,49 +39,37 @@ class JobCreateView(View):
             job.company = request.user.company
             job.save()
             return redirect('jobs:job_list')
-
         return render(request, 'companies/job_create.html', {'form': form})
 
 
-# ------------------------------------------------------------
-# JOB SEEKER – APPLY FOR JOB
-# ------------------------------------------------------------
+# JOB SEEKER — APPLY FOR JOB
 @method_decorator(login_required, name='dispatch')
 class JobApplyView(View):
     def post(self, request, job_id):
         job = get_object_or_404(Job, id=job_id)
 
-        # Avoid duplicate applications
-        already = Applicant.objects.filter(job=job, job_seeker=request.user).exists()
-        if not already:
+        # prevent duplicate applications
+        if not Applicant.objects.filter(job=job, job_seeker=request.user).exists():
             Applicant.objects.create(job=job, job_seeker=request.user)
 
-        return redirect('jobs:job_detail', job_id=job.id)
+        return redirect('jobs:job_detail', job_id=job_id)
 
 
-# ------------------------------------------------------------
-# COMPANY – VIEW APPLICANTS
-# ------------------------------------------------------------
+# COMPANY — VIEW APPLICANTS
 @login_required
 def view_applicants(request, job_id):
     job = get_object_or_404(Job, id=job_id, company=request.user.company)
-    applicants = Applicant.objects.filter(job=job).select_related('job_seeker')
-
+    applicants = Applicant.objects.filter(job=job)
     return render(request, "jobs/applicants_list.html", {
         "job": job,
-        "applicants": applicants
+        "applicants": applicants,
     })
 
 
-# ------------------------------------------------------------
-# COMPANY – UPDATE APPLICANT STATUS
-# ------------------------------------------------------------
+# COMPANY — UPDATE APPLICANT STATUS
 @login_required
 def update_applicant_status(request, applicant_id, action):
     applicant = get_object_or_404(Applicant, id=applicant_id)
-
-    if applicant.job.company != request.user.company:
-        return redirect("jobs:job_list")  # block unauthorized access
 
     if action == "shortlist":
         applicant.status = "shortlisted"
