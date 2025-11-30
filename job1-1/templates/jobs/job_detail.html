@@ -1,32 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ job.title }}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
-</head>
-<body>
-    {% include 'base.html' %}
-    
-    <div class="container mt-5">
-        <h1>{{ job.title }}</h1>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Company: {{ job.company.company_name }}</h5>
-                <p class="card-text"><strong>Description:</strong> {{ job.description }}</p>
-                <p class="card-text"><strong>Category:</strong> {{ job.category }}</p>
-                <p class="card-text"><strong>Location:</strong> {{ job.location }}</p>
-                <p class="card-text"><strong>Type:</strong> {{ job.type }}</p>
-                <p class="card-text"><strong>Salary:</strong> {{ job.salary }}</p>
-                <p class="card-text"><strong>Status:</strong> {{ job.status }}</p>
-                <a href="{% url 'apply_job' job.id %}" class="btn btn-primary">Apply Now</a>
-            </div>
-        </div>
-    </div>
+{% extends 'base.html' %}
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% block content %}
+
+<h1>{{ job.title }}</h1>
+
+<p><strong>Company:</strong> {{ job.company.company_name }}</p>
+<p><strong>Location:</strong> {{ job.location }}</p>
+<p><strong>Category:</strong> {{ job.category }}</p>
+<p><strong>Job Type:</strong> {{ job.job_type|title }}</p>
+<p><strong>Salary:</strong> ₹{{ job.salary }}</p>
+<p><strong>Description:</strong><br>{{ job.description }}</p>
+
+<hr>
+
+<!-- JOB SEEKER – APPLY BUTTON -->
+{% if request.user.is_authenticated and request.user.company != job.company %}
+<form method="POST" action="{% url 'jobs:apply_job' job.pk %}">
+    {% csrf_token %}
+    <button type="submit" style="padding:8px 16px;">Apply Now</button>
+</form>
+{% endif %}
+
+<!-- COMPANY – VIEW APPLICANTS BUTTON -->
+{% if request.user.is_authenticated and request.user.company == job.company %}
+    <a href="{% url 'jobs:view_applicants' job.pk %}">
+        <button style="margin-top:20px; padding:8px 16px;">View Applicants</button>
+    </a>
+{% endif %}
+
+<hr>
+
+<a href="{% url 'jobs:job_list' %}">
+    <button>Back to Job List</button>
+</a>
+
+{% endblock %}

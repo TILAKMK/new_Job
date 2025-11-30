@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Applicants for: {{ job.title }}</h2>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Applicant</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for applicant in applicants %}
+    <tr>
+        <td>{{ applicant.job_seeker.username }}</td>
+        <td>{{ applicant.status }}</td>
+        <td>
+            <a href="{% url 'jobs:update_applicant_status' applicant.id 'shortlist' %}">
+                Shortlist
+            </a> |
+            <a href="{% url 'jobs:update_applicant_status' applicant.id 'reject' %}">
+                Reject
+            </a> |
+            <a href="{% url 'jobs:update_applicant_status' applicant.id 'accept' %}">
+                Accept
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="{% url 'jobs:job_detail' job.id %}">← Back to Job</a>
+
+{% endblock %}
+
